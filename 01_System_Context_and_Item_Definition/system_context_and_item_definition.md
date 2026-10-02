@@ -69,9 +69,37 @@ The electrical grid is outside the vehicle boundary and supplies the external ch
 
 ### 3.1 System Context Diagram
 
-![System Context](./system_context.png)
+```mermaid
+flowchart LR
 
-**Figure 1 — System Context**
+    EXT["External AC / DC<br/>Charging Source"]
+
+    BMS["BMS"]
+
+    ITEM["Vehicle-Side<br/>Charging System"]
+
+    BAT["HV Battery"]
+
+    EXT -->|Charging energy<br/>Session / interface information| ITEM
+
+    BMS -->|Charge permission<br/>Charging limits<br/>Validity / status| ITEM
+
+    ITEM -->|Controlled charging energy| BAT
+
+    ITEM -->|Charging status / coordination| EXT
+
+    classDef external fill:#f2f2f2,stroke:#666,stroke-width:1.5px
+    classDef item fill:#e8f1fb,stroke:#3d6f9e,stroke-width:2px
+    classDef battery fill:#e8f5e9,stroke:#4f7d53,stroke-width:1.5px
+
+    class EXT,BMS external
+    class ITEM item
+    class BAT battery
+```
+
+**Figure 1 — Vehicle Charging System Context**
+
+Diagram source: [`01_system_context.mmd`](./diagrams/01_system_context.mmd)
 
 Solid connections represent electrical-energy flow. Dashed connections represent information or control interactions.
 
