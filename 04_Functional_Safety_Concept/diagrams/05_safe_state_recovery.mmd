@@ -1,0 +1,30 @@
+```mermaid
+flowchart TB
+
+    REQ["SAFE_STATE_REQUEST"]
+
+    PRIMARY["Primary Safe-State<br/>Execution"]
+
+    VERIFY["Safe-State Achievement<br/>Verification"]
+
+    SAFE["SAFE_STATE_CONFIRMED"]
+
+    BACKUP["Backup / Escalated<br/>Safe-State Execution"]
+
+    RESTART["Restart Permissibility /<br/>Verification"]
+
+    ENABLE["New Charging<br/>Enable Sequence"]
+
+    REQ --> PRIMARY
+
+    PRIMARY --> VERIFY
+
+    VERIFY -->|Confirmed| SAFE
+
+    VERIFY -->|Not confirmed| BACKUP
+    BACKUP --> VERIFY
+
+    SAFE --> RESTART
+
+    RESTART -->|RESTART_PERMITTED| ENABLE
+```
