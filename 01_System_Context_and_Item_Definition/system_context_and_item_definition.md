@@ -70,7 +70,7 @@ The electrical grid is outside the vehicle boundary and supplies the external ch
 
 ### 3.1 System Context Diagram
 
-![Vehicle Charging System Context](system_context.png)
+![System Context](system_context.png)
 
 **Figure 1 — Vehicle Charging System Context**
 
