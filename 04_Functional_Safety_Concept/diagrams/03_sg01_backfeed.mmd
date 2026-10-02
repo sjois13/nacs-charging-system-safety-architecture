@@ -1,0 +1,32 @@
+```mermaid
+flowchart TB
+
+    EXT["External AC<br/>Charging Source"]
+    MODE["AC Mode<br/>Qualification"]
+    PATH["AC Charging<br/>Path Control"]
+    CTRL["AC Charging<br/>Power Control"]
+    BAT["HV Battery"]
+
+    MEAS["AC Interface<br/>Voltage + Current"]
+    FLOW["AC Power-Flow<br/>Direction Determination"]
+    SUP["Charging Safety<br/>Supervision"]
+    DEC["Safety Decision"]
+    SAFE["Safe-State<br/>Execution"]
+
+    EXT --> MODE
+    MODE -->|AC_VALID| PATH
+    PATH --> CTRL
+    CTRL --> BAT
+
+    EXT --> MEAS
+    MEAS --> FLOW
+    FLOW -->|GRID_TO_VEHICLE / VEHICLE_TO_GRID / UNKNOWN| SUP
+
+    MODE -->|Mode status| SUP
+
+    SUP -->|REVERSE_POWER_FLOW| DEC
+    DEC -->|SAFE_STATE_REQUEST| SAFE
+
+    SAFE -.->|Inhibit AC path| PATH
+    SAFE -.->|Inhibit energy transfer| CTRL
+```
