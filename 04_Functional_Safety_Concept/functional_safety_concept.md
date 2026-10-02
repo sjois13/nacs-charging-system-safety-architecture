@@ -295,6 +295,43 @@ The SG-01 concept combines prevention, detection, safe-state execution, verifica
 
 ### 4.1 Prevention
 
+```mermaid
+flowchart TB
+
+    EXT["External AC<br/>Charging Source"]
+    MODE["AC Mode<br/>Qualification"]
+    PATH["AC Charging<br/>Path Control"]
+    CTRL["AC Charging<br/>Power Control"]
+    BAT["HV Battery"]
+
+    MEAS["AC Interface<br/>Voltage + Current"]
+    FLOW["AC Power-Flow<br/>Direction Determination"]
+    SUP["Charging Safety<br/>Supervision"]
+    DEC["Safety Decision"]
+    SAFE["Safe-State<br/>Execution"]
+
+    EXT --> MODE
+    MODE -->|AC_VALID| PATH
+    PATH --> CTRL
+    CTRL --> BAT
+
+    EXT --> MEAS
+    MEAS --> FLOW
+    FLOW -->|GRID_TO_VEHICLE / VEHICLE_TO_GRID / UNKNOWN| SUP
+
+    MODE -->|Mode status| SUP
+
+    SUP -->|REVERSE_POWER_FLOW| DEC
+    DEC -->|SAFE_STATE_REQUEST| SAFE
+
+    SAFE -.->|Inhibit AC path| PATH
+    SAFE -.->|Inhibit energy transfer| CTRL
+```
+
+**Figure 2 — SG-01 Backfeed Prevention and Detection**
+
+Source: [`03_sg01_backfeed.mmd`](./diagrams/03_sg01_backfeed.mmd)
+
 Before AC charging is permitted, a valid AC charging mode is established.
 
 The charging path and AC power-conversion function are configured for AC charging.
@@ -375,6 +412,46 @@ Prevent a thermal event caused by overcharging of the HV battery.
 The SG-02 concept combines battery charging permission, permitted charging limits, monitoring of actual charging conditions, safe-state execution, verification, and controlled restart.
 
 ### 5.1 Charging Permission and Limits
+
+```mermaid
+flowchart TB
+
+    BMS["External BMS"]
+
+    LIMIT["Battery Charging<br/>Permission / Limits"]
+
+    CTRL["Charging Control<br/>AC / DC"]
+
+    BAT["HV Battery"]
+
+    ACTUAL["Actual Charging Conditions<br/>Voltage • Current • Temperature"]
+
+    SUP["Charging Safety<br/>Supervision"]
+
+    DEC["Safety Decision"]
+
+    SAFE["Safe-State<br/>Execution"]
+
+    BMS -->|CHARGE_ALLOWED<br/>V_CHARGE_MAX<br/>I_CHARGE_MAX<br/>Validity| LIMIT
+
+    LIMIT -->|Permitted charging envelope| CTRL
+    CTRL -->|Charging energy| BAT
+
+    LIMIT -->|Permission + limits| SUP
+
+    BAT --> ACTUAL
+    ACTUAL --> SUP
+
+    SUP -->|LIMIT_VIOLATION<br/>CHARGE_NOT_ALLOWED<br/>SAFETY_INFORMATION_INVALID| DEC
+
+    DEC -->|SAFE_STATE_REQUEST| SAFE
+
+    SAFE -.->|Inhibit charging| CTRL
+```
+
+**Figure 3 — SG-02 Overcharge Prevention and Supervision**
+
+Source: [`04_sg02_overcharge.mmd`](./diagrams/04_sg02_overcharge.mmd)
 
 Charging permission and charging-limit information are received through the Battery Charging Permission / Limit Interface.
 
@@ -476,6 +553,41 @@ The vehicle charging system remains responsible for detecting conditions that re
 ## 7. Common Safe-State and Recovery Concept
 
 The functional architecture uses a common safety-response structure for SG-01 and SG-02.
+
+```mermaid
+flowchart TB
+
+    REQ["SAFE_STATE_REQUEST"]
+
+    PRIMARY["Primary Safe-State<br/>Execution"]
+
+    VERIFY["Safe-State Achievement<br/>Verification"]
+
+    SAFE["SAFE_STATE_CONFIRMED"]
+
+    BACKUP["Backup / Escalated<br/>Safe-State Execution"]
+
+    RESTART["Restart Permissibility /<br/>Verification"]
+
+    ENABLE["New Charging<br/>Enable Sequence"]
+
+    REQ --> PRIMARY
+
+    PRIMARY --> VERIFY
+
+    VERIFY -->|Confirmed| SAFE
+
+    VERIFY -->|Not confirmed| BACKUP
+    BACKUP --> VERIFY
+
+    SAFE --> RESTART
+
+    RESTART -->|RESTART_PERMITTED| ENABLE
+```
+
+**Figure 4 — Safe-State Execution and Recovery**
+
+Source: [`05_safe_state_recovery.mmd`](./diagrams/05_safe_state_recovery.mmd)
 
 ```text
 Hazard-relevant condition
