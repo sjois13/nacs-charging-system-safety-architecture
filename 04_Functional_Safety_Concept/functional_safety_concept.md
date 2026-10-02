@@ -35,16 +35,107 @@ The functional safety architecture contains the following functional blocks:
 The functional safety architecture separates normal charging functions, safety supervision, and safe-state/recovery functions.
 
 ```mermaid
-%% Paste the contents of:
-%% ./diagrams/02_functional_safety_architecture.mmd
+flowchart TB
+
+    %% ===== INPUTS =====
+    subgraph INPUTS["① Inputs"]
+        direction LR
+        EXT["External Charging<br/>Interface"]
+        BMS["External BMS"]
+    end
+
+    %% ===== NORMAL CHARGING =====
+    subgraph NORMAL["② Normal Charging"]
+        direction TB
+        MODE["Session / Mode<br/>Qualification"]
+        LIMIT["Battery Charging<br/>Permission / Limits"]
+        PATH["Charging Path /<br/>Mode Control"]
+        AC["AC Charging<br/>Power Control"]
+        DC["DC Charging<br/>Coordination"]
+    end
+
+    BAT["HV Battery"]
+
+    %% ===== SAFETY SUPERVISION =====
+    subgraph MONITOR["③ Safety Supervision"]
+        direction TB
+        FLOW["AC Power-Flow<br/>Determination"]
+        SUP["Charging Safety<br/>Supervision"]
+        DEC["Safety Decision"]
+    end
+
+    %% ===== SAFE STATE & RECOVERY =====
+    subgraph RECOVERY["④ Safe State & Recovery"]
+        direction TB
+        SAFE["Safe-State<br/>Execution"]
+        VERIFY["Safe-State Achievement<br/>Verification"]
+        BACKUP["Backup Safe-State<br/>Execution"]
+        RESTART["Restart Permissibility /<br/>Verification"]
+    end
+
+    %% ===== NORMAL FLOW =====
+    EXT --> MODE
+    BMS --> LIMIT
+
+    MODE --> PATH
+
+    PATH -->|AC_VALID| AC
+    PATH -->|DC_VALID| DC
+
+    LIMIT --> AC
+    LIMIT --> DC
+
+    AC --> BAT
+    DC --> BAT
+
+    %% ===== SUPERVISION =====
+    EXT --> FLOW
+    FLOW --> SUP
+
+    MODE --> SUP
+    LIMIT --> SUP
+    BAT --> SUP
+
+    SUP --> DEC
+
+    %% ===== SAFETY REACTION =====
+    DEC -->|SAFE_STATE_REQUEST| SAFE
+
+    SAFE -.->|Inhibit path| PATH
+    SAFE -.->|Inhibit AC charging| AC
+    SAFE -.->|Inhibit DC charging| DC
+
+    SAFE --> VERIFY
+
+    VERIFY -->|Confirmed| RESTART
+    VERIFY -->|Not confirmed| BACKUP
+
+    BACKUP --> VERIFY
+
+    RESTART -.->|RESTART_PERMITTED| MODE
+
+    %% ===== STYLING =====
+    classDef input fill:#f2f2f2,stroke:#666,stroke-width:1.5px
+    classDef normal fill:#e8f1fb,stroke:#3d6f9e,stroke-width:1.5px
+    classDef monitor fill:#fff0d8,stroke:#b87516,stroke-width:1.5px
+    classDef recovery fill:#eee6f8,stroke:#72509b,stroke-width:1.5px
+    classDef battery fill:#e8f5e9,stroke:#4f7d53,stroke-width:1.5px
+
+    class EXT,BMS input
+    class MODE,LIMIT,PATH,AC,DC normal
+    class FLOW,SUP,DEC monitor
+    class SAFE,VERIFY,BACKUP,RESTART recovery
+    class BAT battery
+
+    style INPUTS fill:#fafafa,stroke:#bbb,stroke-dasharray:4 3
+    style NORMAL fill:#f4f8fd,stroke:#9bbbd9
+    style MONITOR fill:#fffaf0,stroke:#e0b66e
+    style RECOVERY fill:#f8f4fc,stroke:#b9a0d6
 ```
 
 **Figure 1 — Functional Safety Architecture**
 
-Diagram source: [`02_functional_safety_architecture.mmd`](./diagrams/02_functional_safety_architecture.mmd)
-
----
-
+Source: [`02_functional_safety_architecture.mmd`](./diagrams/02_functional_safety_architecture.mmd)
 ## 3. Functional Responsibilities
 
 ### 3.1 Session / Mode Qualification
