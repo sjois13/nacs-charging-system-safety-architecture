@@ -1,0 +1,35 @@
+```mermaid
+flowchart TB
+
+    BMS["External BMS"]
+
+    LIMIT["Battery Charging<br/>Permission / Limits"]
+
+    CTRL["Charging Control<br/>AC / DC"]
+
+    BAT["HV Battery"]
+
+    ACTUAL["Actual Charging Conditions<br/>Voltage • Current • Temperature"]
+
+    SUP["Charging Safety<br/>Supervision"]
+
+    DEC["Safety Decision"]
+
+    SAFE["Safe-State<br/>Execution"]
+
+    BMS -->|CHARGE_ALLOWED<br/>V_CHARGE_MAX<br/>I_CHARGE_MAX<br/>Validity| LIMIT
+
+    LIMIT -->|Permitted charging envelope| CTRL
+    CTRL -->|Charging energy| BAT
+
+    LIMIT -->|Permission + limits| SUP
+
+    BAT --> ACTUAL
+    ACTUAL --> SUP
+
+    SUP -->|LIMIT_VIOLATION<br/>CHARGE_NOT_ALLOWED<br/>SAFETY_INFORMATION_INVALID| DEC
+
+    DEC -->|SAFE_STATE_REQUEST| SAFE
+
+    SAFE -.->|Inhibit charging| CTRL
+```
