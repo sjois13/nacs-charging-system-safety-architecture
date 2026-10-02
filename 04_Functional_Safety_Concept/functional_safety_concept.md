@@ -32,9 +32,16 @@ The functional safety architecture contains the following functional blocks:
 
 ### 2.1 Functional Architecture Diagram
 
-![Functional Safety Architecture](./diagrams/functional_safety_architecture.png)
+The functional safety architecture separates normal charging functions, safety supervision, and safe-state/recovery functions.
+
+```mermaid
+%% Paste the contents of:
+%% ./diagrams/02_functional_safety_architecture.mmd
+```
 
 **Figure 1 — Functional Safety Architecture**
+
+Diagram source: [`02_functional_safety_architecture.mmd`](./diagrams/02_functional_safety_architecture.mmd)
 
 ---
 
