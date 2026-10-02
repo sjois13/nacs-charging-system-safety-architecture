@@ -552,8 +552,6 @@ The vehicle charging system remains responsible for detecting conditions that re
 
 ## 7. Common Safe-State and Recovery Concept
 
-The functional architecture uses a common safety-response structure for SG-01 and SG-02.
-
 ```mermaid
 flowchart TB
 
@@ -588,22 +586,6 @@ flowchart TB
 **Figure 4 — Safe-State Execution and Recovery**
 
 Source: [`05_safe_state_recovery.mmd`](./diagrams/05_safe_state_recovery.mmd)
-
-```text
-Hazard-relevant condition
-        ↓
-Charging Safety Supervision
-        ↓
-Safety Decision
-        ↓
-SAFE_STATE_REQUEST
-        ↓
-Safe-State Execution
-        ↓
-Safe-State Achievement Verification
-        ↓
-Restart Permissibility / Verification
-```
 
 The triggering conditions differ between the Safety Goals, but the functional safety-response path is shared.
 
